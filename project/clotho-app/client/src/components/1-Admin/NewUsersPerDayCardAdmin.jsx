@@ -135,6 +135,7 @@ function Card2RPD() {
                         :
                         <div className="chart-area">
                             <h4>Total Users Created: {totalUsers} ({totalAdmins} Admins, {totalNonAdmins} Non-Admins)</h4>
+                            <p><small>--click below to toggle options--</small></p>
                             <Line data={allChartData} options={chartOptions} />
                         </div>
                     }
