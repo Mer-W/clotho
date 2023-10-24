@@ -5,9 +5,7 @@ const cors = require('cors');
 require("dotenv").config({ path: "../.env" });
 require("dotenv").config();
 
-// testing something //
-// const db = require("./models");
-// *** //
+
 
 db.sequelize.sync().then(() => {
 
@@ -16,11 +14,14 @@ app.use(
 
     cors({
   
-      origin: ["https://clotho-frontend-e926130cfc7f.herokuapp.com","http://localhost:3000"],
+      origin: ["https://clotho-client-d1e4ce0f9903.herokuapp.com","http://localhost:3000"],
+
       // TODO: //
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE","OPTION"],
   
       credentials: true,
+      // axios.defaults.withCredentials = true;
+
   
     })
   
