@@ -11,6 +11,8 @@ function calculateUsersByDate(usersList) {
 
     let ubdArray = []; // contains objects like { label: "2023-10-09", ubd: 0 }
     let totalUsers = 0; 
+    let totalAdmins = 0;
+    let totalNonAdmins = 0;
 
     const mapDateToIndex = new Map();
     let indexTracker = 0;
@@ -31,7 +33,7 @@ function calculateUsersByDate(usersList) {
                 // indexTracker keeps track of which array item corresponds to which date
                 mapDateToIndex.set(dateString, indexTracker);
                 indexTracker++;
-                ubdArray.push({ label: dateString, userCount: 0 });
+                ubdArray.push({ label: dateString, userCount: 0 , adminCount: 0, nonAdminCount: 0});
 
                 //OLD
                 //labelsByDate.push((todayYear === firstYear) ? `${month}-${date}` : `${year}-${month}-${date}`)
@@ -52,6 +54,7 @@ function calculateUsersByDate(usersList) {
         let userYear = val.createdAt.slice(2, 4);
         let userMonth = val.createdAt.slice(5, 7);
         let userDate = val.createdAt.slice(8, 10);
+        let userIsAdmin = val.isAdmin;
 
         // format date to always contain leading zeros on month and date
         let dateString = userYear + "-" + ("0" + userMonth.toString()).slice(-2) + "-" + ("0" + userDate.toString()).slice(-2);
@@ -61,10 +64,19 @@ function calculateUsersByDate(usersList) {
 
         // increment userCount in the object located in ubdArray at the index corresponding to the date
         ubdArray[mapDateToIndex.get(dateString)].userCount++;
+        
+        if (userIsAdmin) {
+            totalAdmins++;
+            ubdArray[mapDateToIndex.get(dateString)].adminCount++;
+
+        } else {
+            totalNonAdmins++;
+            ubdArray[mapDateToIndex.get(dateString)].nonAdminCount++;
+        }
 
     })
 
-    return { ubdArray, totalUsers};
+    return { ubdArray, totalUsers, totalAdmins, totalNonAdmins};
 }
 
 export default calculateUsersByDate;
