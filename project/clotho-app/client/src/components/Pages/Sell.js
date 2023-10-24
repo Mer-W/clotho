@@ -231,7 +231,7 @@ function Sell() {
 
             <Container>
                 <div className='col-10 offset-1'>
-                    <div className='my-5'><h3>Sell an item</h3></div>
+                    <div className='mt-5 mb-3'><h3>Sell an item</h3></div>
                 <Card>
                     <CardBody>
                         <span ref={errRef} className={errorMessage ? "errorMessage" : "offscreen"} aria-live="assertive">{errorMessage}</span>
@@ -295,7 +295,7 @@ function Sell() {
                                     ))}
                                 </Row>
                             </div>
-                            <Button color="primary" type="submit">Create Listing</Button>
+                            <Button className='btn bg-dark text-white fs-5 fw-bold w-100 my-3' type="submit">Publish</Button>
                         </Form>
                     </CardBody>
                 </Card>

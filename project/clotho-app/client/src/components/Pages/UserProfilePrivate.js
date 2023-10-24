@@ -118,9 +118,14 @@ function UserProfilePrivate() {
 
 
                 </div>
-                <div className='row my-5'>
+                <div className='row mb-5'>
                     <Link to="/settings">
-                        <button className='btn border-dark fs-5 mb-2 w-25'>Edit Profile</button>
+                        <button className='btn border-dark fs-5 mt-5 w-25'>Edit Profile</button>
+                    </Link>
+                </div>
+                <div className='row my-5'>
+                    <Link to="/sell">
+                        <button className='btn bg-dark text-white fw-bold rounded-0 fs-4 mb-2 w-25'>Sell</button>
                     </Link>
                 </div>
             </div>
