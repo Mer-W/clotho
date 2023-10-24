@@ -134,14 +134,13 @@ function Card2RPD() {
                         <LoaderSpinner />
                         :
                         <div className="chart-area">
-                            <h4>Total Users Created: {totalUsers} ({totalAdmins} Admins, {totalNonAdmins} Non-Admins)</h4>
-                            <p><small>--click below to toggle options--</small></p>
+                            <h4>Total Users Created: {totalUsers}</h4>
+                            <h6>Admins: {totalAdmins}</h6>
+                            <h6>Non-admins: {totalNonAdmins}</h6>
+                            <p><small>--click to toggle options--<br/>--hover for precise data--</small></p>
                             <Line data={allChartData} options={chartOptions} />
                         </div>
                     }
-
-
-                    
                 </CardBody>
             </Card>
         </>

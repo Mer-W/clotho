@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import useAxiosJWT from '../../hooks/useAxiosJWT'; 
+import useAxiosJWT from '../../hooks/useAxiosJWT';
 // Reactstrap
 import {
     Row,
@@ -38,10 +38,9 @@ function NewUserForm() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState('1');
     const [isDeleted, setIsDeleted] = useState(false);
     const [imgUrl, setImgUrl] = useState('placeholder');
-
     const [usersList, setUsersList] = useState([]);
     const [showAlert, setShowAlert] = useState(false);
 
@@ -50,21 +49,14 @@ function NewUserForm() {
             setUsersList(response.data);
         });
     }, []);
-    
+
 
     // create new user from form
-    const createUser = () => {
+    const createUser = async (e) => {
 
-            const username = document.getElementById('newUserUsername').value;
-            const password = document.getElementById('newUserPassword').value;
-            const email = document.getElementById('newUserEmail').value;
-            // const isAdmin = document.getElementById('newUserIsAdminTrue').checked ? true : false;
-            // const isDeleted = document.getElementById('newUserIsDeleted').checked;
-            const imgUrl = document.getElementById('newUserImgUrl').value;
-        
+        e.preventDefault();
 
-        // TODO: Frontend Validation
-        // e.g. check for duplicate usernames, etc.
+        // TODO: check for duplicate usernames, etc.
 
         // post to db
         axiosJWT.post("/admin/users", { //FIXME HANDLE SUBMIT, DISPLAY ERROR
@@ -75,19 +67,19 @@ function NewUserForm() {
             isDeleted: isDeleted,
             imgUrl: imgUrl
         })
-        .then(response => {
-            setShowAlert(true);  // Show an alert if it worked
-            setUsersList([...usersList, response.data]);
+            .then(response => {
+                setShowAlert(true);  // Show an alert if it worked
+                setUsersList([...usersList, response.data]);
 
-        })
-        .catch(error => {
-            console.error("There was an error", error);
-        });
+            })
+            .catch(error => {
+                console.error("There was an error", error);
+            });
     }
 
     return (
         <>
-            {showAlert && 
+            {showAlert &&
                 <div className="alert alert-success" role="alert">
                     User created successfully!
                 </div>
@@ -100,16 +92,17 @@ function NewUserForm() {
                                 <CardTitle tag="h4">Create New User</CardTitle>
                             </CardHeader>
                             <CardBody>
-                                <Form>
+                                <Form onSubmit={createUser}>
                                     <Row>
                                         <Col className="pr-md-1" md="5">
                                             <FormGroup>
                                                 <label>Username:</label>
                                                 <Input
-                                                    id="newUserUsername" 
+                                                    id="newUserUsername"
                                                     placeholder="Clever Username Here"
-                                                    type="text" 
+                                                    type="text"
                                                     required
+                                                    onChange={(e) => setUsername(e.target.value)}
                                                 />
                                             </FormGroup>
                                         </Col>
@@ -120,36 +113,40 @@ function NewUserForm() {
                                                     id='newUserPassword'
                                                     placeholder="Secure Password Here"
                                                     type="text"
+                                                    onChange={(e) => setPassword(e.target.value)}
                                                 />
                                             </FormGroup>
                                         </Col>
                                         <Col className="pl-md-1" md="4">
                                             <FormGroup>
-                                                 <label> {/* htmlFor="exampleInputEmail1" */}
+                                                <label> {/* htmlFor="exampleInputEmail1" */}
                                                     Email:
                                                 </label>
                                                 <Input
                                                     id="newUserEmail"
                                                     placeholder="real@email.com"
                                                     type="email"
+                                                    onChange={(e) => setEmail(e.target.value)}
                                                 />
                                             </FormGroup>
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col className="pr-md-1" md="4">
-                                            
+
                                             <label>Role:</label>
                                         </Col>
-                                        <Col>    
+                                        <Col>
                                             <FormGroup>
                                                 <Input
                                                     id="newUserIsAdminTrue"
                                                     name="newUserIsAdmin"
                                                     type="radio"
+                                                    onChange={(e) => setIsAdmin('1')}
+                                                    defaultChecked
                                                 />
                                                 <label>
-                                                     Admin
+                                                    Admin
                                                 </label>
                                             </FormGroup>
                                         </Col>
@@ -159,9 +156,10 @@ function NewUserForm() {
                                                     id="newUserIsAdminFalse"
                                                     name="newUserIsAdmin"
                                                     type="radio"
+                                                    onChange={(e) => setIsAdmin('0')}
                                                 />
                                                 <label>
-                                                     User
+                                                    User
                                                 </label>
                                             </FormGroup>
                                         </Col>
@@ -172,9 +170,10 @@ function NewUserForm() {
                                                     id="newUserIsAdminGod"
                                                     name="newUserIsAdmin"
                                                     type="radio"
+                                                    onChange={(e) => setIsAdmin('GOD')}
                                                 />
                                                 <Label >
-                                                     God Tier DBA
+                                                    God Tier DBA
                                                 </Label>
                                             </FormGroup>
                                         </Col>
@@ -189,25 +188,26 @@ function NewUserForm() {
                                                     defaultValue="placeholder"
                                                     placeholder="placeholder"
                                                     type="text"
+                                                    onChange={(e) => setImgUrl(e.target.value)}
                                                 />
                                             </FormGroup>
                                         </Col>
                                     </Row>
-                                    </Form>
-                        </CardBody>
-                        <CardFooter>
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => { createUser() }}
-                            >
-                                Create User
-                            </button>
-                        </CardFooter>
-                    </Card>
-                </Col>
-            </Row>
-        </div>
-    </>
-);
-        }
+                                </Form>
+                            </CardBody>
+                            <CardFooter>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={(e) => { createUser(e) }}
+                                >
+                                    Create User
+                                </button>
+                            </CardFooter>
+                        </Card>
+                    </Col>
+                </Row>
+            </div>
+        </>
+    );
+}
 export default NewUserForm;

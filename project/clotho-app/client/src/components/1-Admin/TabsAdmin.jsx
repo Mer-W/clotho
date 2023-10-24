@@ -43,10 +43,10 @@ import NewUsersPerDayCard from './NewUsersPerDayCardAdmin';
 import UsersList from '../Tables/UsersTable';
 import LoaderSpinner from '../LoaderSpinner';
 import UsersTableCardAdmin from './UsersTableCardAdmin';
-import NewUserForm from "../Forms/NewUserForm";
 import PHCreateListing from "../PLACEHOLDERS/PHCreateListing";
 import CreateListingAdminTest from "../Forms/CreateListingAdminTest";
 import classnames from 'classnames'; 
+import NewUserFormAdmin from './NewUserFormAdmin';
 
 
 function TabsAdmin() {
@@ -121,7 +121,7 @@ function TabsAdmin() {
                 <TabPane tabId="2">
                     <Row className="p-3">
                         <Col xs="12" lg="10" className="mx-auto my-2">
-                            <NewUserForm />
+                            <NewUserFormAdmin />
                         </Col>
                     </Row>
                 </TabPane>
