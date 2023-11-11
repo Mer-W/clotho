@@ -1,5 +1,5 @@
 // IMPORT: React
-import { React, useState, use } from 'react';
+import { React, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 // IMPORT: Popups
@@ -43,10 +43,12 @@ import LogoutNavItem from './HeaderItems/LogoutNavItem';
 
 function Header({ props }) {
 
-//  const navigate = useNavigate();
+  //  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
+
+  const exampleRef = useRef(true);
 
   // initial login state
   const [isLoggedIn, setIsLoggedIn] = useState(!(sessionStorage.getItem('token') === '' || sessionStorage.getItem('token') === null));
@@ -108,14 +110,14 @@ function Header({ props }) {
         <Collapse isOpen={isOpen} navbar>
           <Nav className="justify-content-end" style={{ width: "100%" }} navbar >
 
-            
+
             <HomeNavItem props={{ isLoggedIn: isLoggedIn, isAdmin: isAdmin, onSubmitProp: popupChange }} />
             <LoginNavItem props={{ isLoggedIn: isLoggedIn, onSubmitProp: popupChange, uname: signupUname }} />
             <LogoutNavItem props={{ isLoggedIn: isLoggedIn, onSubmitProp: popupChange }} />
             <SignupNavItem props={{ isLoggedIn: isLoggedIn, onSubmitProp: popupChange }} />
             <AdminNavItem props={{ isLoggedIn: isLoggedIn, isAdmin: isAdmin, onSubmitProp: popupChange }} />
             <DevNavItem props={{ isLoggedIn: isLoggedIn }} />
-            <UserNavItem props={{ isLoggedIn: isLoggedIn, uname: uname, onClickProp: popupChange}} />
+            <UserNavItem props={{ isLoggedIn: isLoggedIn, uname: uname, onClickProp: popupChange }} />
 
           </Nav>
           {/* <Nav>

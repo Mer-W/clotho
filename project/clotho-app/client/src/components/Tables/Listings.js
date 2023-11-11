@@ -1,6 +1,6 @@
 //TODO links to single listings, search filter layout + menu, display results eg "results for 'fancy shoes'", "no listings fournd"
 //FIXME CLEAR FILTERS OPTION
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from '../../api/axios';
 //import { Input, FormGroup, Label, Button, Form, Col, Card, CardImg, CardBody, CardTitle, CardText, Container, Row } from 'reactstrap';
 import {
@@ -25,9 +25,9 @@ function Listings() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
-
+  //latestSearchParams = useRef({ search : ""})
   useEffect(() => {
-  
+
     getListings();
 
   }, [search, selectedSize, selectedCategory, selectedGender]);
@@ -35,22 +35,40 @@ function Listings() {
 
 
   const getListings = async () => {
-
     try {
 
-      var response = await axios.get(`/listings?search=${search}&size=${selectedSize}&category=${selectedCategory}&gender=${selectedGender}`);
+      const currentSearch = search
 
-      console.log(response.data)
+      axios.get(`/listings?search=${search}&size=${selectedSize}&category=${selectedCategory}&gender=${selectedGender}`).then(async (response) => {
+        if (search !== currentSearch) return; // Ignore outdated responses
 
-      var list = response.data;
+        var list = response.data;
 
-      for (let i in list) {
+        for (let i in list) {
+          var img = await axios.get(`/images/thumbnail/${list[i].id}`);
+          list[i].thumbnail = img.data.url;
+        }
+        console.log(search, currentSearch)
+
+        if (search !== currentSearch) return; // Ignore outdated responses
+        setListings(list);
+      })
 
 
-        var img = await axios.get(`/images/thumbnail/${list[i].id}`);
-        list[i].thumbnail = img.data.url;
-      }
-      setListings(list);
+
+      // var response = await axios.get(`/listings?search=${search}&size=${selectedSize}&category=${selectedCategory}&gender=${selectedGender}`);
+
+      // console.log(response.data)
+
+      // var list = response.data;
+
+      // for (let i in list) {
+
+
+      //   var img = await axios.get(`/images/thumbnail/${list[i].id}`);
+      //   list[i].thumbnail = img.data.url;
+      // }
+      // setListings(list);
 
     } catch (err) {
       console.log(err);
@@ -58,133 +76,133 @@ function Listings() {
   }
 
 
-useEffect(() => {
+  useEffect(() => {
 
-  // Fetch categories
-  axios.get('/attr/categories')
-    .then(response => {
-      setCategories(response.data);
-    })
-    .catch(error => {
-      console.error('Error fetching categories:', error);
-    });
+    // Fetch categories
+    axios.get('/attr/categories')
+      .then(response => {
+        setCategories(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching categories:', error);
+      });
 
-  // Fetch sizes
-  axios.get('/attr/sizes')
-    .then(response => {
-      setSizes(response.data);
-    })
-    .catch(error => {
-      console.error('Error fetching sizes:', error);
-    });
+    // Fetch sizes
+    axios.get('/attr/sizes')
+      .then(response => {
+        setSizes(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching sizes:', error);
+      });
 
-  //Fetch genders
-  axios.get('/attr/genders')
-    .then(response => {
-      setGenders(response.data);
-    })
-    .catch(error => {
-      console.error('Error fetching genders:', error);
-    });
+    //Fetch genders
+    axios.get('/attr/genders')
+      .then(response => {
+        setGenders(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching genders:', error);
+      });
 
-}, []);
+  }, []);
 
 
 
-// Filter listings based on search term and selected filters
-const filteredListings = listings.filter(listing => {
-  return listing.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
-    (!selectedSize || listing.size === selectedSize) &&
-    (!selectedCategory || listing.category === selectedCategory);
-});
+  // Filter listings based on search term and selected filters
+  const filteredListings = listings.filter(listing => {
+    return listing.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (!selectedSize || listing.size === selectedSize) &&
+      (!selectedCategory || listing.category === selectedCategory);
+  });
 
-const clearFilters = () => {
-  setSelectedCategory('');
-  setSelectedGender('');
-  setSelectedSize('');
-}
+  const clearFilters = () => {
+    setSelectedCategory('');
+    setSelectedGender('');
+    setSelectedSize('');
+  }
 
-return (
-  <Container>
-    <Row className="mb-4">
-      <Col md="8" className="offset-2">
-        <InputGroup>
-          <Input
-            placeholder="Search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          //  onKeyDown={e => {
-          //     if (e.key === 'Enter') {
-          //        fetchListings();
-          //     } 
-          //  }
-          //  }
-          />
-          <InputGroupText addontype="append">🔍</InputGroupText>
-        </InputGroup>
-      </Col>
+  return (
+    <Container>
+      <Row className="mb-4">
+        <Col md="8" className="offset-2">
+          <InputGroup>
+            <Input
+              placeholder="Search"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            //  onKeyDown={e => {
+            //     if (e.key === 'Enter') {
+            //        fetchListings();
+            //     } 
+            //  }
+            //  }
+            />
+            <InputGroupText addontype="append">🔍</InputGroupText>
+          </InputGroup>
+        </Col>
       </Row>
       <Row className="mb-4">
-      <div className='col-md-2 offset-2 text-center'>
-        <Dropdown isOpen={dropdownOpenCategory} toggle={() => setDropdownOpenCategory(prevState => !prevState)}>
-          <DropdownToggle caret className="w-100">
-            {selectedCategory || "Category"}
-          </DropdownToggle>
-          <DropdownMenu>
-            {categories.map(category => <DropdownItem key={category.id} onClick={() => setSelectedCategory(category.id)}>{category.name}</DropdownItem>)}
-          </DropdownMenu>
-        </Dropdown>
-      </div>
-      <div className='col-md-2 text-center'>
-        <Dropdown isOpen={dropdownOpenSize} toggle={() => setDropdownOpenSize(prevState => !prevState)}>
-          <DropdownToggle caret className="w-100">
-            {selectedSize || "Size"}
-          </DropdownToggle>
-          <DropdownMenu>
-            {sizes.map(size => <DropdownItem key={size.id} onClick={() => setSelectedSize(size.id)}>{size.name}</DropdownItem>)}
-          </DropdownMenu>
-        </Dropdown>
-      </div>
+        <div className='col-md-2 offset-2 text-center'>
+          <Dropdown isOpen={dropdownOpenCategory} toggle={() => setDropdownOpenCategory(prevState => !prevState)}>
+            <DropdownToggle caret className="w-100">
+              {selectedCategory || "Category"}
+            </DropdownToggle>
+            <DropdownMenu>
+              {categories.map(category => <DropdownItem key={category.id} onClick={() => setSelectedCategory(category.id)}>{category.name}</DropdownItem>)}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+        <div className='col-md-2 text-center'>
+          <Dropdown isOpen={dropdownOpenSize} toggle={() => setDropdownOpenSize(prevState => !prevState)}>
+            <DropdownToggle caret className="w-100">
+              {selectedSize || "Size"}
+            </DropdownToggle>
+            <DropdownMenu>
+              {sizes.map(size => <DropdownItem key={size.id} onClick={() => setSelectedSize(size.id)}>{size.name}</DropdownItem>)}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
 
-      <div className='col-md-2 text-center'>
-        <Dropdown isOpen={dropdownOpenGender} toggle={() => setDropdownOpenGender(prevState => !prevState)}>
-          <DropdownToggle caret className="w-100">
-            {selectedGender || "Gender"}
-          </DropdownToggle>
-          <DropdownMenu>
-            {genders.map(gender => <DropdownItem key={gender.id} onClick={() => setSelectedGender(gender.id)}>{gender.name}</DropdownItem>)}
-          </DropdownMenu>
-        </Dropdown>
-      </div>
-      {selectedCategory || selectedGender || selectedSize ? (
-<div className='col-md-2'>
-<button className='btn btn-light text-danger' onClick={clearFilters}>Clear filters</button>
+        <div className='col-md-2 text-center'>
+          <Dropdown isOpen={dropdownOpenGender} toggle={() => setDropdownOpenGender(prevState => !prevState)}>
+            <DropdownToggle caret className="w-100">
+              {selectedGender || "Gender"}
+            </DropdownToggle>
+            <DropdownMenu>
+              {genders.map(gender => <DropdownItem key={gender.id} onClick={() => setSelectedGender(gender.id)}>{gender.name}</DropdownItem>)}
+            </DropdownMenu>
+          </Dropdown>
+        </div>
+        {selectedCategory || selectedGender || selectedSize ? (
+          <div className='col-md-2'>
+            <button className='btn btn-light text-danger' onClick={clearFilters}>Clear filters</button>
 
-</div>
-      ) : (<></>)}
-    </Row>
+          </div>
+        ) : (<></>)}
+      </Row>
 
 
 
-    <Row className="mt-5">
+      <Row className="mt-5">
 
-    {listings.map(listing => (
-    <Col md="2" className="my-2 p-1" key={listing.id}>
-        <Link to={`/products/${listing.id}`}>
-            <Card className='border-0 rounded-0'>
+        {listings.map(listing => (
+          <Col md="2" className="my-2 p-1" key={listing.id}>
+            <Link to={`/products/${listing.id}`}>
+              <Card className='border-0 rounded-0'>
                 <img className='border-0 rounded-0' top width="100%" src={listing.thumbnail} alt="listing image" />
-            </Card>
-            <Row className='px-3 fs-5 fw-bold'>
+              </Card>
+              <Row className='px-3 fs-5 fw-bold'>
                 ${listing.price}
-            </Row>
-        </Link>
-    </Col>
-))}
+              </Row>
+            </Link>
+          </Col>
+        ))}
 
 
-</Row>
-  </Container>
-);
+      </Row>
+    </Container>
+  );
 }
 
 export default Listings;
@@ -279,7 +297,7 @@ export default Listings;
 //         list[i].thumbnail = img.data.url;
 //       }
 //       setListings(list);
-//       setError(null); 
+//       setError(null);
 //     } catch (err) {
 //       console.error('Error fetching listings:', err);
 //       // setError('Failed to fetch listings');
@@ -350,7 +368,7 @@ export default Listings;
 //           //  onKeyDown={e => {
 //           //     if (e.key === 'Enter') {
 //           //        fetchListings();
-//           //     } 
+//           //     }
 //           //  }
 //           //  }
 //           />
